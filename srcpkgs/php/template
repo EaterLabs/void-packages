@@ -1,19 +1,21 @@
 # Template file for 'php'
 pkgname=php
-version=7.3.1
+version=7.4RC0
 revision=1
 conf_files="/etc/php/php.ini"
-hostmakedepends="bison pkg-config"
+hostmakedepends="bison pkg-config autoconf re2c"
 makedepends="apache-devel enchant-devel freetds-devel freetype-devel gdbm-devel
- gmp-devel libcurl-devel libjpeg-turbo-devel libmysqlclient-devel
- libsodium-devel libtidy5-devel libxslt-devel libzip-devel net-snmp-devel
- postgresql-libs-devel readline-devel sqlite-devel unixodbc-devel pcre2-devel"
+ gmp-devel libcurl-devel libjpeg-turbo-devel libmysqlclient-devel libffi-devel
+ libsodium-devel libtidy5-devel libxslt-devel libzip-devel net-snmp-devel gd-devel
+ postgresql-libs-devel readline-devel sqlite-devel unixodbc-devel pcre2-devel
+ libXpm-devel"
 short_desc="HTML-embedded scripting language"
 maintainer="Steve Prybylski <sa.prybylx@gmail.com>"
 license="PHP-3.01"
 homepage="https://www.php.net"
-distfiles="http://www.php.net/distributions/php-${version}.tar.xz"
-checksum=cfe93e40be0350cd53c4a579f52fe5d8faf9c6db047f650a4566a2276bf33362
+wrksrc="php-src-PHP-7.4"
+distfiles="https://github.com/php/php-src/archive/PHP-7.4.tar.gz"
+checksum=92ae129e72fba386b6cc940510b0024bad5745a04ff10a8a2a28e4cccf001463
 
 # Needs (probably a lot of) work to make it cross compile
 nocross=https://build.voidlinux.eu/builders/armv7l-musl_builder/builds/16307/steps/shell_3/logs/stdio
@@ -41,6 +43,7 @@ do_build() {
 		--enable-exif=shared \
 		--enable-ftp=shared \
 		--enable-intl=shared \
+		--enable-gd=shared \
 		--enable-mbstring \
 		--enable-opcache \
 		--enable-pcntl \
@@ -59,7 +62,7 @@ do_build() {
 		--with-db4=/usr \
 		--with-enchant=shared,/usr \
 		--with-freetype-dir=/usr \
-		--with-gd=shared \
+		--with-ffi=shared \
 		--with-gdbm \
 		--with-gettext=shared \
 		--with-gmp=shared \
@@ -96,6 +99,8 @@ do_build() {
 	export EXTENSION_DIR
 	PEAR_INSTALLDIR=/usr/share/pear
 	export PEAR_INSTALLDIR
+
+	./buildconf
 
 	# cgi,cli,embed,fcgi,fpm
 	mkdir -p build
@@ -191,18 +196,19 @@ php-embed_package() {
 	}
 }
 
-php-pear_package() {
-	lib32disabled=yes
-	depends="php-${version}_${revision}"
-	short_desc+=' - PHP Extension and Application Repository'
-	conf_files="/etc/php/pear.conf"
-	pkg_install() {
-		cd ${wrksrc}/build
-		make install-pear INSTALL_ROOT=${PKGDESTDIR}
-		rm -rf ${PKGDESTDIR}/.{channels,depdb,depdblock,filemap,lock,registry}
-		rm -rf ${PKGDESTDIR}/usr/share/pear/.{channels,depdb,depdblock,filemap,lock,registry}
-	}
-}
+# php-pear_package() {
+#	lib32disabled=yes
+#	depends="php-${version}_${revision}"
+#	short_desc+=' - PHP Extension and Application Repository'
+#	conf_files="/etc/php/pear.conf"
+#	broken="pear is dead, long live pear"
+#	pkg_install() {
+#		cd ${wrksrc}/build
+#		make install-pear INSTALL_ROOT=${PKGDESTDIR}
+#		rm -rf ${PKGDESTDIR}/.{channels,depdb,depdblock,filemap,lock,registry}
+#		rm -rf ${PKGDESTDIR}/usr/share/pear/.{channels,depdb,depdblock,filemap,lock,registry}
+#	}
+# }
 
 php-enchant_package() {
 	lib32disabled=yes
@@ -309,5 +315,14 @@ php-sodium_package() {
 	short_desc+=' - sodium module'
 	pkg_install() {
 		vmove usr/lib/php/modules/sodium.so
+	}
+}
+
+php-ffi_package() {
+	lib32disabled=yes
+	depends="php-${version}_${revision}"
+	short_desc+=' - ffi module'
+	pkg_install() {
+		vmove usr/lib/php/modules/ffi.so
 	}
 }
