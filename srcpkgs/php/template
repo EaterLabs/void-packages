@@ -1,6 +1,6 @@
 # Template file for 'php'
 pkgname=php
-version=7.4RC0
+version=7.4.jit.RC0
 revision=1
 conf_files="/etc/php/php.ini"
 hostmakedepends="bison pkg-config autoconf re2c"
@@ -13,9 +13,9 @@ short_desc="HTML-embedded scripting language"
 maintainer="Steve Prybylski <sa.prybylx@gmail.com>"
 license="PHP-3.01"
 homepage="https://www.php.net"
-wrksrc="php-src-PHP-7.4"
-distfiles="https://github.com/php/php-src/archive/PHP-7.4.tar.gz"
-checksum=92ae129e72fba386b6cc940510b0024bad5745a04ff10a8a2a28e4cccf001463
+wrksrc="php-src-jit-dynasm-7.4"
+distfiles="https://github.com/zendtech/php-src/archive/jit-dynasm-7.4.tar.gz"
+checksum=f6bb1c9806a81e3171ec222f4eec94bb33e31f8edc8088323ab7b11926f9bc1a
 
 # Needs (probably a lot of) work to make it cross compile
 nocross=https://build.voidlinux.eu/builders/armv7l-musl_builder/builds/16307/steps/shell_3/logs/stdio
